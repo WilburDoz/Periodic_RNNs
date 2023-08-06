@@ -44,3 +44,31 @@ def generate_data(params, freqs = [], jitter = []):
     params.model.seq_len = trial_len
     
     return input_dict
+
+def generate_data_easy(params, freqs = [], jitter = []):
+    trial_len = params.data.min_length + np.random.randint(params.data.max_length - params.data.min_length)
+    number_of_beats = params.data.min_beats + np.random.randint(params.data.max_beats - params.data.min_beats)
+    if freqs == []:
+        if params.data.freq_type == 0:
+            freqs = params.data.min_freq + np.random.randint(params.data.max_freq-params.data.min_freq, size=[params.data.batch_size])
+        else:
+            freqs = np.random.choice(params.data.freqs, size = params.data.batch_size)
+    elif len(freqs) != params.data.batch_size:
+        print("Num freqs does not equal batch size!")
+
+    output_traces = np.zeros([trial_len, params.data.batch_size])
+    
+    for (freq_ind, freq) in enumerate(freqs):
+        number_of_predictions = int(np.floor((trial_len-1-params.data.offset)/freq+1))
+        output_traces[freq*np.arange(number_of_predictions), freq_ind] = 1
+         
+    input_dict = parameters_will.DotDict()
+    input_dict.outputs = torch.from_numpy(output_traces).type(torch.float32)
+    freq_inds = torch.zeros(len(freqs), dtype=int)
+    for (freq_ind, freq) in enumerate(freqs):
+        freq_inds[freq_ind] = np.where(torch.tensor(params.data.freqs) == freqs[freq_ind])[0][0]
+    input_dict.freqs = freq_inds
+    
+    params.model.seq_len = trial_len
+    
+    return input_dict
