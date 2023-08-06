@@ -16,16 +16,16 @@ def default_params():
     #data.number_of_beats = 4
     #data.minimal_number_of_pred = 4
     data.data_type = 0 # 0 for pulse, 1 for cosine
-    data.min_length = 200
+    data.min_length = 100
     data.max_length = 300
-    data.batch_size = 10
+    data.batch_size = 5
     data.min_beats = 3
     data.max_beats = 6
     data.freq_type = 1 # 0 for max min, 1 for specific set randomly sampled
     data.jitter_type = 1
     data.min_freq = 9
     data.max_freq = 10
-    data.freqs = [5,6,7,8,9]#,11,12,13,14,15]
+    data.freqs = [5,6,7,8,9,11,12,13,14,15]
     data.offset = 1 # offset the peaks or not?
 
     """
@@ -43,6 +43,7 @@ def default_params():
     model.t_size = 1
     model.linear_std = 1
     model.batch_size = data.batch_size
+    model.num_inits = len(data.freqs)
 
     """
     ----------------------------------------------------------------
