@@ -5,11 +5,14 @@ import RNN_Will as _model_
 import numpy as np
 import pickle
 import utils
+from datetime import datetime
+import os
 
 # Set up our parameters
 params = parameters_will.default_params()
 
 print_iters = 100
+save_iters = 100
 
 # make instance of model
 model = _model_.VanillaRNN(params.model)
@@ -20,6 +23,14 @@ model = model.to(device)
 # Make an ADAM optimizer
 optimizer = optim.Adam(model.parameters(), lr=params.train.learning_rate, weight_decay=params.train.weight_decay)
 min_loss = np.infty
+
+# Setup save directory
+path = os.getcwd()
+now = datetime.now()
+current_time = now.strftime("%y_%m_%d_%H%M%S")
+directory = path + "/" + current_time + "/"
+if not os.path.exists(directory):
+    os.makedirs(directory)
 
 for train_i in range(params.train.train_iters):
 
@@ -52,3 +63,8 @@ for train_i in range(params.train.train_iters):
 
     if train_i % print_iters == 0:
         print(f"{train_i}, {losses.item():.5f}, {loss_fit.item():.5f}, {losses.item()-loss_fit.item():.5f}")
+        
+    if train_i % save_iters == 0:
+        model_name = directory + str(train_i)
+        torch.save(model, model_name)
+        
