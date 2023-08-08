@@ -8,7 +8,7 @@ import torch
 def generate_data(params, freqs = [], jitter = []):
     trial_len = params.data.min_length + np.random.randint(params.data.max_length - params.data.min_length)
     number_of_beats = params.data.min_beats + np.random.randint(params.data.max_beats - params.data.min_beats)
-    if freqs == []:
+    if len(freqs) == 0:
         if params.data.freq_type == 0:
             freqs = params.data.min_freq + np.random.randint(params.data.max_freq-params.data.min_freq, size=[params.data.batch_size])
         else:
@@ -16,7 +16,7 @@ def generate_data(params, freqs = [], jitter = []):
     elif len(freqs) != params.data.batch_size:
         print("Num freqs does not equal batch size!")
         
-    if jitter == []:
+    if len(jitter) == 0:
         jitter = np.random.randint(freqs)
     elif len(jitter) != params.data.batch_size:
         print("Num jitters does not equal batch size!")
@@ -48,7 +48,7 @@ def generate_data(params, freqs = [], jitter = []):
 def generate_data_easy(params, freqs = [], jitter = []):
     trial_len = params.data.min_length + np.random.randint(params.data.max_length - params.data.min_length)
     number_of_beats = params.data.min_beats + np.random.randint(params.data.max_beats - params.data.min_beats)
-    if freqs == []:
+    if len(freqs) == 0:
         if params.data.freq_type == 0:
             freqs = params.data.min_freq + np.random.randint(params.data.max_freq-params.data.min_freq, size=[params.data.batch_size])
         else:

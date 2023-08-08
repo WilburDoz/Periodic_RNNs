@@ -12,7 +12,7 @@ import os
 params = parameters_will.default_params()
 
 print_iters = 100
-save_iters = 100
+save_iters = 10000
 
 # make instance of model
 model = _model_.VanillaRNN(params.model)

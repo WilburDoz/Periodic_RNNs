@@ -16,7 +16,7 @@ def default_params():
     #data.number_of_beats = 4
     #data.minimal_number_of_pred = 4
     data.data_type = 0 # 0 for pulse, 1 for cosine
-    data.min_length = 100
+    data.min_length = 200
     data.max_length = 300
     data.batch_size = 5
     data.min_beats = 3
@@ -33,8 +33,8 @@ def default_params():
     MODEL
     ----------------------------------------------------------------
     """
-    model.h_size = 50
-    model.hidden_act = 'relu'
+    model.h_size = 200
+    model.hidden_act = 'tanh'
     model.hidden_init_learn = True
     model.hidden_init_std = 1
     model.transition_init = 'orthogonal'
@@ -51,9 +51,9 @@ def default_params():
     ----------------------------------------------------------------
     """
     train.learning_rate = 5e-5
-    train.weight_decay = 1e-3
+    train.weight_decay = 0
     train.train_iters = 1000000
-    train.act_weight = 0.01
+    train.act_weight = 0
 
     return DotDict({'data': data,
                     'model': model,
