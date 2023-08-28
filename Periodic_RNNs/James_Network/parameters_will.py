@@ -25,7 +25,7 @@ def default_params():
     data.jitter_type = 1
     data.min_freq = 9
     data.max_freq = 10
-    data.freqs = [5,6,7,8,9,11,12,13,14,15]
+    data.freqs = [5,9] #[5,6,7,8,9,11,12,13,14,15]
     data.offset = 1 # offset the peaks or not?
 
     """
@@ -33,8 +33,8 @@ def default_params():
     MODEL
     ----------------------------------------------------------------
     """
-    model.h_size = 200
-    model.hidden_act = 'tanh'
+    model.h_size = 100
+    model.hidden_act = 'relu' # 'tanh'
     model.hidden_init_learn = True
     model.hidden_init_std = 1
     model.transition_init = 'orthogonal'
