@@ -108,16 +108,18 @@ class VanillaRNN(nn.Module):
         # initialise hidden
         h = self.activation(self.hidden_init.tile([self.batch_size, 1]))  # (can remove activation here)
         pred = self.predict(h)
-        hs, preds = [], []
+        hs, preds, preactivations = [], [], []
 
         # Run RNN
         for i, (i_to_h) in enumerate(inputs.observation):
             # this is your thing to gate the input (you need to specify inputs.input_or_rnn which is batch x seq_len x 1
             hidden_input = inputs.input_or_rnn[i,:][:,None] * self.embedding(i_to_h[:,None]) + (1.0 - inputs.input_or_rnn[i,:][:,None]) *  self.embedding(pred)
+            preactivation = self.transition(h) + hidden_input
             # path integrate (generative)
-            h = self.activation(self.transition(h) + hidden_input)
+            h = self.activation(preactivation)
             # store rnn hidden states
             hs.append(h)
+            preactivations.append(preactivation)
             
             # prediction (this makes a prediction for next time-step (can add activation post transition if you want))
             pred = self.out_activation(self.predict(h))
@@ -128,6 +130,7 @@ class VanillaRNN(nn.Module):
         variable_dict = parameters_will.DotDict(
             {'hidden': hs,
              'pred': preds,
+             'preactivations':preactivations
              })
 
         return variable_dict
