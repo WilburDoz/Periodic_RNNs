@@ -72,3 +72,19 @@ def generate_data_easy(params, freqs = [], jitter = []):
     params.model.seq_len = trial_len
     
     return input_dict
+
+def generate_osc_data(params):
+    freqs = np.array(params.data.freqs)
+    trial_len = params.data.min_length + np.random.randint(params.data.max_length - params.data.min_length)
+
+    outputs = np.zeros([trial_len, len(freqs)])
+    for (freq_counter, freq) in enumerate(freqs):
+        outputs[freq-1::freq, freq_counter] = 1
+
+    input_dict = parameters_will.DotDict()
+    input_dict.freq = torch.from_numpy(freqs)
+    input_dict.outputs = torch.from_numpy(outputs)
+
+    params.model.num_freqs = 2
+    
+    return input_dict

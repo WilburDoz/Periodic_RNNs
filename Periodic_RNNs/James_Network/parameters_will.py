@@ -17,7 +17,7 @@ def default_params():
     #data.minimal_number_of_pred = 4
     data.data_type = 0 # 0 for pulse, 1 for cosine
     data.min_length = 200
-    data.max_length = 300
+    data.max_length = 1000
     data.batch_size = 5
     data.min_beats = 3
     data.max_beats = 6
@@ -25,15 +25,16 @@ def default_params():
     data.jitter_type = 1
     data.min_freq = 9
     data.max_freq = 10
-    data.freqs = [5,6] #[5,6,7,8,9,11,12,13,14,15]
+    data.freqs = [2,3] #[5,6,7,8,9,11,12,13,14,15]
     data.offset = 1 # offset the peaks or not?
+    data.oscillators = 1
 
     """
     ----------------------------------------------------------------
     MODEL
     ----------------------------------------------------------------
     """
-    model.h_size = 20
+    model.h_size = 2
     model.hidden_act = 'relu' # 'tanh'
     model.hidden_init_learn = True
     model.hidden_init_std = 1
@@ -42,7 +43,10 @@ def default_params():
     model.i_size = 1
     model.t_size = 1
     model.linear_std = 1
-    model.batch_size = data.batch_size
+    if data.oscillators:
+        model.batch_size = len(data.freqs)
+    else:
+        model.batch_size = data.batch_size
     model.num_inits = len(data.freqs)
 
     """
@@ -51,9 +55,9 @@ def default_params():
     ----------------------------------------------------------------
     """
     train.learning_rate = 5e-5
-    train.weight_decay = 0
-    train.train_iters = 1000000
-    train.act_weight = 0
+    train.weight_decay = 0.001
+    train.train_iters = 100000
+    train.act_weight = 0.01
 
     return DotDict({'data': data,
                     'model': model,

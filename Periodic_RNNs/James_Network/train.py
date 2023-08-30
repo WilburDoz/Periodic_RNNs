@@ -8,14 +8,30 @@ import utils
 from datetime import datetime
 import os
 
+torch.autograd.set_detect_anomaly(True)
+
+print('Booting up parameters')
 # Set up our parameters
 params = parameters_will.default_params()
 
 print_iters = 100
-save_iters = 10000
+save_iters = 1000
+use_existing_model = 1
 
 # make instance of model
-model = _model_.VanillaRNN(params.model)
+print('Making model')
+if use_existing_model == 1:
+    folder = "23_08_30_150658"
+    name = '1000'
+    path_here = "/Users/will/Documents/Inverse_Models/Periodic_RNNs/James_Network"
+    path_name = path_here + "/" + folder + "/" + name
+    model = torch.load(path_name)
+else:
+    if params.data.oscillators:
+        model = _model_.Oscillator(params.model)
+    else:
+        model = _model_.VanillaRNN(params.model)
+        
 # put model to gpu (if available)
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
@@ -31,11 +47,20 @@ current_time = now.strftime("%y_%m_%d_%H%M%S")
 directory = path + "/" + current_time + "/"
 if not os.path.exists(directory):
     os.makedirs(directory)
+torch.save(params, path_here + "/" + folder + "/" + 'params')
+
+if params.data.oscillators:
+    generator = utils.generate_osc_data
+else:
+    generator = utils.generate_data
+loss_func = _model_.compute_losses_torch
+
+print('Starting Training')
 
 for train_i in range(params.train.train_iters):
 
     # 1. Get input data, and convert to tensors (I have assumed you will put inputs etc into a dictionary)
-    input_dict = utils.generate_data(params)#, freqs = np.full(params.data.batch_size, 7, dtype=int))
+    input_dict = generator(params)#, freqs = np.full(params.data.batch_size, 7, dtype=int))
     
     # set all gradients to None
     # optimizer.zero_grad()
@@ -46,7 +71,7 @@ for train_i in range(params.train.train_iters):
     variables = model(input_dict, device=device)
     
     # collate inputs for model
-    (losses, loss_fit) = _model_.compute_losses_torch(input_dict, variables, model, params.train, device=device)
+    (losses, loss_fit) = loss_func(input_dict, variables, model, params.train, device=device)
 
     # backward pass
     losses.backward()
@@ -60,6 +85,7 @@ for train_i in range(params.train.train_iters):
         min_loss = losses.detach()
         best_model = model
         print(f"{train_i}, new PB! {min_loss}")
+        torch.save(best_model, directory + 'best_model')
 
     if train_i % print_iters == 0:
         print(f"{train_i}, {losses.item():.5f}, {loss_fit.item():.5f}, {losses.item()-loss_fit.item():.5f}")

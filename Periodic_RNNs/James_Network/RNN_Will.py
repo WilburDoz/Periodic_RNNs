@@ -228,10 +228,39 @@ class ReInit_RNN(nn.Module):
              })
 
         return variable_dict
-    
-
 
 def compute_losses_torch(model_in, model_out, model, par, device='cpu'):
     loss_fit = torch.sum(torch.pow(model_in.outputs[:,:,None] - torch.stack(model_out.pred), 2))
     loss_act = torch.sum(torch.pow(torch.stack(model_out.hidden), 2))
     return (loss_fit + par.act_weight*loss_act, loss_fit)
+
+class Oscillator(VanillaRNN):
+    def __init__(self, par):
+        super().__init__(par)
+        self.hidden_init = nn.Parameter(torch.zeros((self.par.batch_size, self.par.h_size), dtype=torch.float32), requires_grad=self.par.hidden_init_learn)
+        _ = self.apply(self._init_weights)
+        
+    def forward(self, inputs, device='cpu'):
+        T = inputs.outputs.size()[0]
+        pre = self.hidden_init
+        h  = self.activation(pre)
+        pred = self.out_activation(self.predict(h))
+        hs, preds, pres = [], [], []
+
+
+        for t in range(T):
+            pre = self.transition(h)
+            h = self.activation(pre)
+            pred = self.out_activation(self.predict(h))
+
+            pres.append(pre)
+            hs.append(h)
+            preds.append(pred)
+
+        variable_dict = parameters_will.DotDict(
+            {'hidden': hs,
+             'pred': preds,
+             'pres':pres
+             })
+
+        return variable_dict
