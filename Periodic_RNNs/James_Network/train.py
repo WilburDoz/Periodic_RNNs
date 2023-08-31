@@ -14,13 +14,9 @@ print('Booting up parameters')
 # Set up our parameters
 params = parameters_will.default_params()
 
-print_iters = 100
-save_iters = 1000
-use_existing_model = 1
-
 # make instance of model
 print('Making model')
-if use_existing_model == 1:
+if params.train.use_existing_model == 1:
     folder = "23_08_30_150658"
     name = '1000'
     path_here = "/Users/will/Documents/Inverse_Models/Periodic_RNNs/James_Network"
@@ -47,7 +43,7 @@ current_time = now.strftime("%y_%m_%d_%H%M%S")
 directory = path + "/" + current_time + "/"
 if not os.path.exists(directory):
     os.makedirs(directory)
-torch.save(params, path_here + "/" + folder + "/" + 'params')
+torch.save(params, directory + 'params')
 
 if params.data.oscillators:
     generator = utils.generate_osc_data
@@ -87,10 +83,10 @@ for train_i in range(params.train.train_iters):
         print(f"{train_i}, new PB! {min_loss}")
         torch.save(best_model, directory + 'best_model')
 
-    if train_i % print_iters == 0:
+    if train_i % params.train.print_iters == 0:
         print(f"{train_i}, {losses.item():.5f}, {loss_fit.item():.5f}, {losses.item()-loss_fit.item():.5f}")
         
-    if train_i % save_iters == 0:
+    if train_i % params.train.save_iters == 0:
         model_name = directory + str(train_i)
         torch.save(model, model_name)
         

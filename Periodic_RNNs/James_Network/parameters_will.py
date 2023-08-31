@@ -25,7 +25,7 @@ def default_params():
     data.jitter_type = 1
     data.min_freq = 9
     data.max_freq = 10
-    data.freqs = [2,3] #[5,6,7,8,9,11,12,13,14,15]
+    data.freqs = [4, 5, 6, 7, 9, 10, 11, 12] #[5,6,7,8,9,11,12,13,14,15]
     data.offset = 1 # offset the peaks or not?
     data.oscillators = 1
 
@@ -34,7 +34,7 @@ def default_params():
     MODEL
     ----------------------------------------------------------------
     """
-    model.h_size = 2
+    model.h_size = 100
     model.hidden_act = 'relu' # 'tanh'
     model.hidden_init_learn = True
     model.hidden_init_std = 1
@@ -58,6 +58,9 @@ def default_params():
     train.weight_decay = 0.001
     train.train_iters = 100000
     train.act_weight = 0.01
+    train.save_iters = 10000
+    train.print_iters = 100
+    train.use_existing_model = 0
 
     return DotDict({'data': data,
                     'model': model,
