@@ -25,7 +25,7 @@ def default_params():
     data.jitter_type = 1
     data.min_freq = 9
     data.max_freq = 10
-    data.freqs = [4, 5, 6, 7, 9, 10, 11, 12] #[5,6,7,8,9,11,12,13,14,15]
+    data.freqs = [2,3,4,5,6,7,8,9,10] #[5,6,7,8,9,11,12,13,14,15]
     data.offset = 1 # offset the peaks or not?
     data.oscillators = 1
 
